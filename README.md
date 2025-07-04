@@ -27,6 +27,28 @@
 - 📱 Android device running version 8.0 (Oreo) or higher.
 - 🛠 Basic knowledge of SIP telephony and networking is recommended.
 
+### Pre-installation
+Before building the project, you need to copy not only the main repository `telon-gsm-sip-gateway`, but also its required libraries to a common folder:
+
+```bash
+# Clone the main repository
+git clone https://github.com/telon-org/telon-gsm-sip-gateway.git
+
+# Clone the required libraries to the same directory level
+git clone https://github.com/telon-org/react-native-tele.git
+git clone https://github.com/telon-org/react-native-sip2.git
+git clone https://github.com/telon-org/react-native-replace-dialer.git
+```
+
+Your directory structure should look like this:
+```
+common-folder/
+├── telon-gsm-sip-gateway/
+├── react-native-tele/
+├── react-native-sip2/
+└── react-native-replace-dialer/
+```
+
 ### Installation
 1. Use GitHub Actions to buid
 
