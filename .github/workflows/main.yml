@@ -27,25 +27,23 @@ jobs:
 
       - name: Clone sibling libraries (react-native-tele, react-native-sip2, react-native-replace-dialer)
         run: |
-          # Клонируем библиотеки на тот же уровень, где ожидает package.json file:../...
           cd $GITHUB_WORKSPACE/..
           git clone https://github.com/telon-org/react-native-tele.git || echo "react-native-tele already exists or clone failed"
           git clone https://github.com/telon-org/react-native-sip2.git || echo "react-native-sip2 already exists or clone failed"
           git clone https://github.com/telon-org/react-native-replace-dialer.git || echo "react-native-replace-dialer already exists or clone failed"
-        # Если репозитории приватные — замените URL на git@github.com:... и добавьте SSH ключ / PAT.
 
-      - name: Cache Node.js
+      - name: Cache Node.js deps
         uses: actions/cache@v4
         with:
           path: ~/.npm
-          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-node-modules-
+            ${{ runner.os }}-node-
 
-      - name: Setup Node.js (LTS)
+      - name: Setup Node.js (LTS 18)
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 18
 
       - name: Verify Node & NPM versions
         run: |
@@ -85,8 +83,7 @@ jobs:
       - name: Install Dependencies (telon-gateway-app)
         run: |
           cd $GITHUB_WORKSPACE/telon-gateway-app
-          # Рекомендуется использовать npm ci для чистой установки, но если у вас lockfile mismatch — используем npm install
-          npm install --no-audit --no-fund
+          npm ci --no-audit --no-fund
         env:
           CI: true
 
@@ -94,7 +91,12 @@ jobs:
         run: |
           cd $GITHUB_WORKSPACE/telon-gateway-app
           mkdir -p android/app/build/intermediates/assets/release/
-          npx react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/build/intermediates/assets/release/index.android.bundle --assets-dest android/app/build/intermediates/res/merged/release
+          npx react-native bundle \
+            --platform android \
+            --dev false \
+            --entry-file index.js \
+            --bundle-output android/app/build/intermediates/assets/release/index.android.bundle \
+            --assets-dest android/app/build/intermediates/res/merged/release
 
       - name: Build Android Release (Gradle bundle)
         run: |
@@ -115,7 +117,6 @@ jobs:
       - name: Download Android App Bundle
         run: |
           mkdir -p $GITHUB_WORKSPACE/dist
-          # Путь к .aab внутри telon-gateway-app
           cp $GITHUB_WORKSPACE/telon-gateway-app/android/app/build/outputs/bundle/release/app-release.aab $GITHUB_WORKSPACE/dist || (echo "AAB not found. Listing build outputs:" && ls -la $GITHUB_WORKSPACE/telon-gateway-app/android/app/build/outputs || true)
 
       - name: Archive Bundle
