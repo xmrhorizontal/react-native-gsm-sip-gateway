@@ -83,7 +83,7 @@ jobs:
       - name: Install Dependencies (telon-gateway-app)
         run: |
           cd $GITHUB_WORKSPACE/telon-gateway-app
-          npm ci --no-audit --no-fund
+          npm ci
         env:
           CI: true
 
